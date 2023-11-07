@@ -17,7 +17,7 @@ namespace Lab10_AnropaDB
             {
                 //-  Hämta alla kunder. Visa företagsnamn, land, region, telefonnummer och antal ordrar
                 //de har Sortera på företagsnamn.Användaren ska kunna välja stigande eller fallande ordning.
-                //In console when listing customers, print number of orders already shipped and number of orders not shipped yet (ShippedDate is null on the latter)
+                //Extra challenge: In console when listing customers, print number of orders already shipped and number of orders not shipped yet (ShippedDate is null on the latter)
 
                 var customerList = context.Customers
                                    .Select(c => new
@@ -26,7 +26,9 @@ namespace Lab10_AnropaDB
                                        Country = c.Country,
                                        Region = c.Region,
                                        Phone = c.Phone,
-                                       OrderCount = c.Orders.Count()   //Vi kan göra implicita joins genom att använda navigation properties
+                                       OrderCount = c.Orders.Count(),   //Vi kan göra implicita joins genom att använda navigation properties
+                                       ShippedCount = c.Orders.Where(o => o.ShippedDate != null).Count(),
+                                       NotShippedCount = c.Orders.Where(o => o.ShippedDate == null).Count()                           
                                    })
                                    .ToList();
                 //Choose the order A or D
@@ -42,15 +44,11 @@ namespace Lab10_AnropaDB
                 }
                 foreach (var customer in customerList)
                 {
-                    Console.WriteLine($"{customer.CompanyName}, from {customer.Country} {customer.Region}, with phone number {customer.Phone} has {customer.OrderCount} orders.");
+                    Console.WriteLine($"{customer.CompanyName}, from {customer.Country} {customer.Region}, " +
+                        $"with phone number {customer.Phone} has {customer.OrderCount} orders in total, " +
+                        $"of which {customer.ShippedCount} are shipped and {customer.NotShippedCount} are not shipped yet..");
                 }
                 Console.WriteLine();
-
-                //Extra chanllenges: print number of orders already shipped and number of orders not shipped yet
-
-                //var chosenCustomer = context.Customers
-                //    .Where(c => c.CompanyName == )
-
             }
         }
 
