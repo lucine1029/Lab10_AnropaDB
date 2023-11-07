@@ -8,8 +8,7 @@ namespace Lab10_AnropaDB
     {
         static void Main(string[] args)
         {
-            bool value = true;
-            while (value)
+            while (true)
             {
                 Console.WriteLine("\nWelcome to NorthWind! Please choose one function to continue:"
                     + "\n 1 Get all customers"
@@ -24,7 +23,9 @@ namespace Lab10_AnropaDB
                         Console.WriteLine("\nPlease choose to continue (C) or exit (E): C or E?");
                         string choice2 = Console.ReadLine().ToUpper();
                         if (choice2 == "E")
-                            value = false;
+                        {
+                            Environment.Exit(1);  //instead of using return false to the while loop boolean variable, we can use while (true)
+                        }
                         break;
                     case "2":
                         MenuAction.SelectOneCustomer();
@@ -32,7 +33,9 @@ namespace Lab10_AnropaDB
                         Console.WriteLine("\nPlease choose to continue (C) or exit (E): C or E?");
                         string choice3 = Console.ReadLine().ToUpper();
                         if (choice3 == "E")
-                            value = false;
+                        {
+                            Environment.Exit(1);
+                        }
                         break;
                     case "3":
                         MenuAction.AddNewCustomer();
@@ -40,7 +43,9 @@ namespace Lab10_AnropaDB
                         Console.WriteLine("\nPlease choose to continue (C) or exit (E): C or E?");
                         string choice4 = Console.ReadLine().ToUpper();
                         if (choice4 == "E")
-                            value = false;
+                        {
+                            Environment.Exit(1);
+                        }
                         break;
                     default:
                         Console.WriteLine("\nInvalid number, please type again!");

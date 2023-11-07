@@ -17,6 +17,7 @@ namespace Lab10_AnropaDB
             {
                 //-  Hämta alla kunder. Visa företagsnamn, land, region, telefonnummer och antal ordrar
                 //de har Sortera på företagsnamn.Användaren ska kunna välja stigande eller fallande ordning.
+                //In console when listing customers, print number of orders already shipped and number of orders not shipped yet (ShippedDate is null on the latter)
 
                 var customerList = context.Customers
                                    .Select(c => new
@@ -28,8 +29,6 @@ namespace Lab10_AnropaDB
                                        OrderCount = c.Orders.Count()   //Vi kan göra implicita joins genom att använda navigation properties
                                    })
                                    .ToList();
-
-
                 //Choose the order A or D
                 Console.WriteLine("Please choose the order(A = Ascending, D = Descending): A or D ?");
                 string order = Console.ReadLine();
@@ -46,6 +45,12 @@ namespace Lab10_AnropaDB
                     Console.WriteLine($"{customer.CompanyName}, from {customer.Country} {customer.Region}, with phone number {customer.Phone} has {customer.OrderCount} orders.");
                 }
                 Console.WriteLine();
+
+                //Extra chanllenges: print number of orders already shipped and number of orders not shipped yet
+
+                //var chosenCustomer = context.Customers
+                //    .Where(c => c.CompanyName == )
+
             }
         }
 
@@ -112,64 +117,96 @@ namespace Lab10_AnropaDB
         {
             //Add customer. The user should be able to add a customer and fill in values for all columns except the ID.
             //iD you need to generate a random string for (5 characters long).
-            //If the user does not fill in a value, null should be sent to the database, not an empty string. How????
+            //If the user does not fill in a value, null should be sent to the database, not an empty string. 
 
             using (var context = new NorthWindContext())
             {
-                Console.WriteLine("Here we go to add an new customer:");
-                //generate a random string CompanyId
-
-                string alfabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                int size = 5;
-                Random rnd = new Random();
-
-                string newCustomerId = "";
-                for (int i = 0; i < size; i++)
+                while (true)
                 {
-                    int randomIndex = rnd.Next(0, 26);
-                    newCustomerId = newCustomerId + alfabet.Substring(randomIndex, 1);  //maybe we need to vertify if the random generated customerId already exists
+                    Console.WriteLine("Here we go to add an new customer:");
+                    //generate a random string CompanyId, perhaps there has other good way.....
+                    string alfabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                    int size = 5;
+                    Random rnd = new Random();
+                    string newCustomerId = "";
+                    for (int i = 0; i < size; i++)
+                    {
+                        int randomIndex = rnd.Next(0, 26);
+                        newCustomerId = newCustomerId + alfabet.Substring(randomIndex, 1);  // We need to vertify if the random generated customerId already exists
+                    }
+                    var existingCustomerId = context.Customers.FirstOrDefault(c => c.CustomerId == newCustomerId); // Find the first customerId matched the randomly generated newCustomerId
+                    if(existingCustomerId != null) 
+                    {
+                        Console.WriteLine("The customerID has existed, please run it again........");
+                    }
+                    else
+                    {                        
+                        Console.WriteLine("\nType the CompanyName: ");
+                        string newCompanyName = Console.ReadLine();
+                        while (string.IsNullOrWhiteSpace(newCompanyName))     //CompanyName should be not null, we need to vertify it first.
+                                                                         //This method 'string.IsNullOrWhiteSpace(newCompanyName)' returns true if the string is null or has no characters, and false otherwise.
+                                                                         //The while loop will repeat as long as the condition is true, meaning that the user input is invalid.
+                        {
+                            Console.WriteLine("\nCompany Name can not be null or empty, please enter the CompanyName: ");
+                            newCompanyName = Console.ReadLine();
+                        }
+                        // Assign null if the input is null or empty, it equals to: 
+                                        //if (string.IsNullOrEmpty(newContactName))
+                                        //{
+                                        //    newContactName = null;
+                                        //}
+                        Console.WriteLine("\nType the ContactName: ");
+                        string input = Console.ReadLine();
+                        string newContactName =string.IsNullOrWhiteSpace(input) ? null : input;
+                        Console.WriteLine("\nType the contactTitle: ");
+                        input = Console.ReadLine();
+                        string newContactTitle = string.IsNullOrWhiteSpace(input) ? null : input;
+                        Console.WriteLine("\nType the Address: ");
+                        input = Console.ReadLine();
+                        string newAddress = string.IsNullOrWhiteSpace(input) ? null : input;
+                        Console.WriteLine("\nType the City: ");
+                        input = Console.ReadLine();
+                        string newCity = string.IsNullOrWhiteSpace(input) ? null : input;
+                        Console.WriteLine("\nType the Region: ");
+                        input = Console.ReadLine();
+                        string newRegion = string.IsNullOrWhiteSpace(input) ? null : input;
+                        Console.WriteLine("\nType the PostalCode: ");
+                        input = Console.ReadLine();
+                        string newPostalCodee = string.IsNullOrWhiteSpace(input) ? null : input;
+                        Console.WriteLine("\nType the Country: ");
+                        input = Console.ReadLine();
+                        string newCountry = string.IsNullOrWhiteSpace(input) ? null : input;
+                        Console.WriteLine("\nType the Phone: ");
+                        input = Console.ReadLine();
+                        string newPhone = string.IsNullOrWhiteSpace(input) ? null : input;
+                        Console.WriteLine("\nType the Fax: ");
+                        input = Console.ReadLine();
+                        string newFax = string.IsNullOrWhiteSpace(input) ? null : input;
+
+                        //add the entered info into the database
+                        Customer customer = new Customer()
+                        {
+                            CustomerId = newCustomerId,
+                            CompanyName = newCompanyName,
+                            ContactName = newContactName,
+                            ContactTitle = newContactTitle,
+                            Address = newAddress,
+                            City = newCity,
+                            Region = newRegion,
+                            PostalCode = newPostalCodee,
+                            Country = newCountry,
+                            Phone = newPhone,
+                            Fax = newFax
+                        };
+                        context.Customers.Add(customer);
+                        context.SaveChanges();
+                        Console.WriteLine("\nThe new customer has added successfully!");
+                        Environment.Exit(1);
+                    }
                 }
 
-                Console.WriteLine("\nType the CompanyName: ");
-                string newCompanyName = Console.ReadLine();
-                Console.WriteLine("\nType the ContactName: ");
-                string newContactName = Console.ReadLine();
-                Console.WriteLine("\nType the contactTitle: ");
-                string newContactTitle = Console.ReadLine();
-                Console.WriteLine("\nType the Address: ");
-                string newAddress = Console.ReadLine();
-                Console.WriteLine("\nType the City: ");
-                string newCity = Console.ReadLine();
-                Console.WriteLine("\nType the Region: ");
-                string newRegion = Console.ReadLine();
-                Console.WriteLine("\nType the PostalCode: ");
-                string newPostalCodee = Console.ReadLine();
-                Console.WriteLine("\nType the Country: ");
-                string newCountry = Console.ReadLine();
-                Console.WriteLine("\nType the Phone: ");
-                string newPhone = Console.ReadLine();
-                Console.WriteLine("\nType the Fax: ");
-                string newFax = Console.ReadLine();
-
-
-                Customer customer = new Customer()
-                {
-                    CustomerId = newCustomerId,
-                    CompanyName = newCompanyName,
-                    ContactName = newContactName,
-                    ContactTitle = newContactTitle,
-                    Address = newAddress,
-                    City = newCity,
-                    Region = newRegion,
-                    PostalCode = newPostalCodee,
-                    Country = newCountry,
-                    Phone = newPhone,
-                    Fax = newFax
-                };
-                context.Customers.Add(customer);
-                context.SaveChanges();
-                Console.WriteLine("\nThe new customer has added successfully!");
             }
         }
+
     }
 }
